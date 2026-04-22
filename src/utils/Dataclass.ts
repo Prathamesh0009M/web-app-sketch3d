@@ -12,9 +12,13 @@ export interface Triangle {
 
 export class DataClass {
     private static readonly TOLERANCE = 1e-6;
+    static instance = new DataClass();
+
 
     vertices: Vertex[] = [];
     triangles: Triangle[] = [];
+
+
 
     storeData(data: number[]) {
         this.vertices = [];
@@ -39,6 +43,18 @@ export class DataClass {
             }
         }
         return data;
+    }
+    
+    addTriangle(
+        x1: number, y1: number, z1: number,
+        x2: number, y2: number, z2: number,
+        x3: number, y3: number, z3: number
+    ) {
+        const i1 = this.findOrAddVertex(x1, y1, z1);
+        const i2 = this.findOrAddVertex(x2, y2, z2);
+        const i3 = this.findOrAddVertex(x3, y3, z3);
+
+        this.triangles.push({ v1: i1, v2: i2, v3: i3 });
     }
 
     private withinTolerance(a: Vertex, x: number, y: number, z: number): boolean {

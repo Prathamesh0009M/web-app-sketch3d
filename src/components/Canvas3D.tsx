@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Rectangle, Square } from "../utils/shape";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const W = 600, H = 500, CAM = 5;
 
@@ -17,6 +18,14 @@ const cam3d = new THREE.PerspectiveCamera(50, W / H, 0.1, 100);
 cam3d.position.set(4, 3, 6);
 cam3d.lookAt(0, 0, 0);
 
+const controls = new OrbitControls(cam3d, renderer.domElement);
+
+controls.enableDamping = true;   // smooth motion
+controls.enableZoom = true;
+controls.enablePan = true;
+
+
+
 scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 const dlight = new THREE.DirectionalLight(0xffffff, 1);
 dlight.position.set(5, 8, 5);
@@ -25,7 +34,7 @@ scene.add(dlight);
 let liveMesh: THREE.Object3D | null = null;
 
 type Props = {
-  vertices: Float32Array;
+  vertices: number[];
   shape: Rectangle | Square | null;
   mode: "2d" | "3d";
   onMouseDown: (e: React.MouseEvent) => void;
@@ -36,6 +45,8 @@ type Props = {
 export default function Canvas3D({ vertices, shape, mode, onMouseDown, onMouseMove, onMouseUp }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
 
+  controls.enabled = (mode === "3d");
+
   useEffect(() => {
     mountRef.current?.appendChild(renderer.domElement);
     return () => { mountRef.current?.removeChild(renderer.domElement); };
@@ -45,13 +56,13 @@ export default function Canvas3D({ vertices, shape, mode, onMouseDown, onMouseMo
   useEffect(() => {
     if (liveMesh) { scene.remove(liveMesh); (liveMesh as any).geometry?.dispose(); liveMesh = null; }
 
-    let rVertices: Float32Array | null = null;
+    let rVertices: number[] | null = null;
 
     if (vertices && vertices.length > 0) {
       // STL file path
       rVertices = vertices;
     } else if (shape) {
-      // Drawn rectangle path
+      // Drawn shape path
       rVertices = mode === "3d" ? shape.getVertices3D(2) : shape.getVertices();
     }
 
@@ -61,7 +72,7 @@ export default function Canvas3D({ vertices, shape, mode, onMouseDown, onMouseMo
     }
 
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(rVertices, 3));
+    geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(rVertices), 3));
 
     if (mode === "3d" || (vertices && vertices.length > 0)) {
       geo.computeVertexNormals();
@@ -77,10 +88,10 @@ export default function Canvas3D({ vertices, shape, mode, onMouseDown, onMouseMo
       const scale = 2 / Math.max(size.x, size.y, size.z);
       geo.scale(scale, scale, scale);
 
-
       geo.rotateX(30);
       geo.rotateY(45);
-      geo.rotateZ(45);
+      geo.rotateZ(30);
+     
       liveMesh = new THREE.Mesh(
         geo,
         new THREE.MeshStandardMaterial({ color: 0x4a90d9, side: THREE.DoubleSide })
@@ -94,7 +105,18 @@ export default function Canvas3D({ vertices, shape, mode, onMouseDown, onMouseMo
 
 
     scene.add(liveMesh);
-    renderer.render(scene, mode === "3d" ? cam3d : cam2d);
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (mode === "3d") {
+        controls.update();
+      }
+
+      renderer.render(scene, mode === "3d" ? cam3d : cam2d);
+    }
+
+    animate();
   }, [vertices, shape, mode]);
 
   return (

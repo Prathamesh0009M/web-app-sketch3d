@@ -1,0 +1,17 @@
+/* Canvas3D.css */
+
+.canvas3d {
+  display: block;
+}
+
+.canvas3d.mode-2d {
+  cursor: crosshair;
+}
+
+.canvas3d.mode-3d {
+  cursor: grab;
+}
+
+.canvas3d.mode-3d:active {
+  cursor: grabbing;
+}

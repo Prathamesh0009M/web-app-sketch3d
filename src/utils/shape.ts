@@ -14,28 +14,26 @@ export class Rectangle {
     this.end = p.clone(); 
   }
 
-  getSTLDATA(){
-    
-  }
-  getVertices(): Float32Array {
+ 
+  getVertices(): number[] {
     const { x: x1, y: y1 } = this.start;
     const { x: x2, y: y2 } = this.end;
 
-    return new Float32Array([
+    return [
       x1,y1,0,  x2,y1,0,   
-      x2,y1,0,  x2,y2,0,   
+      x2,y1,0,  x2,y2,0, 
       x2,y2,0,  x1,y2,0,   
       x1,y2,0,  x1,y1,0,  
-    ]);
+    ];
   }
-    getVertices3D(depth: number = 1): Float32Array {
+    getVertices3D(depth: number = 1): number[] {
     const { x: x1, y: y1 } = this.start;
     const { x: x2, y: y2 } = this.end;
 
     const z1 = 0;
     const z2 = depth;
 
-    return new Float32Array([
+    return [
       x1,y1,z1,  x2,y1,z1,  x2,y2,z1,
       x1,y1,z1,  x2,y2,z1,  x1,y2,z1,
 
@@ -53,7 +51,7 @@ export class Rectangle {
 
       x1,y1,z1,  x2,y1,z2,  x2,y1,z1,
       x1,y1,z1,  x1,y1,z2,  x2,y1,z2,
-    ]);
+    ];
   }
 
 }
@@ -83,26 +81,26 @@ export class Square{
     );
   }
 
-  getVertices(): Float32Array {
+  getVertices(): number[] {
     const { x: x1, y: y1 } = this.start;
     const { x: x2, y: y2 } = this.end;
 
-    return new Float32Array([
+    return [
       x1,y1,0,  x2,y1,0,
       x2,y1,0,  x2,y2,0,
       x2,y2,0,  x1,y2,0,
       x1,y2,0,  x1,y1,0,
-    ]);
+    ];
   }
 
-  getVertices3D(depth: number = 1): Float32Array {
+  getVertices3D(depth: number = 1): number[] {
     const { x: x1, y: y1 } = this.start;
     const { x: x2, y: y2 } = this.end;
 
     const z1 = 0;
     const z2 = depth;
 
-    return new Float32Array([
+    return [
       // front
       x1,y1,z1,  x2,y1,z1,  x2,y2,z1,
       x1,y1,z1,  x2,y2,z1,  x1,y2,z1,
@@ -123,6 +121,6 @@ export class Square{
 
       x1,y1,z1,  x2,y1,z2,  x2,y1,z1,
       x1,y1,z1,  x1,y1,z2,  x2,y1,z2,
-    ]);
+    ];
   }
 }
